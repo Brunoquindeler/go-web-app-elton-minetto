@@ -1,11 +1,15 @@
 package beer
 
+import (
+	_ "github.com/mattn/go-sqlite3"
+)
+
 type UseCase interface {
 	GetAll() ([]*Beer, error)
-	Get(ID int) (*Beer, error)
+	Get(ID int64) (*Beer, error)
 	Store(beer *Beer) error
 	Update(beer *Beer) error
-	Remove(ID int) error
+	Remove(ID int64) error
 }
 
 type Service struct{}
