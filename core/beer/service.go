@@ -7,10 +7,19 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+const CreateDBQuery = `
+CREATE TABLE IF NOT EXISTS beer (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    type INTEGER NOT NULL,
+    style INTEGER NOT NULL
+);
+`
+
 type UseCase interface {
 	GetAll() ([]*Beer, error)
 	Get(ID int64) (*Beer, error)
-	Store(beer *Beer) error
+	Store(beer *Beer) (int, error)
 	Update(beer *Beer) error
 	Remove(ID int64) error
 }
@@ -48,7 +57,7 @@ func (s *Service) GetAll() ([]*Beer, error) {
 	return beers, nil
 }
 
-func (s *Service) Get(ID int) (*Beer, error) {
+func (s *Service) Get(ID int64) (*Beer, error) {
 	var beer Beer
 
 	statement, err := s.DB.Prepare("SELECT id, name, type, style FROM beer WHERE id = ?")
@@ -65,26 +74,31 @@ func (s *Service) Get(ID int) (*Beer, error) {
 	return &beer, nil
 }
 
-func (s *Service) Store(beer *Beer) error {
+func (s *Service) Store(beer *Beer) (int, error) {
 	transaction, err := s.DB.Begin()
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	statement, err := transaction.Prepare("INSERT INTO beer(id, name, type, style) VALUES (?,?,?,?)")
+	statement, err := transaction.Prepare("INSERT INTO beer(name, type, style) VALUES (?,?,?)")
 	if err != nil {
-		return err
+		return 0, err
 	}
 	defer statement.Close()
 
-	_, err = statement.Exec(beer.ID, beer.Name, beer.Type, beer.Style)
+	result, err := statement.Exec(beer.Name, beer.Type, beer.Style)
 	if err != nil {
 		transaction.Rollback()
-		return err
+		return 0, err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
 	}
 
 	transaction.Commit()
-	return nil
+	return int(id), nil
 }
 
 func (s *Service) Update(beer *Beer) error {
@@ -113,7 +127,7 @@ func (s *Service) Update(beer *Beer) error {
 	return nil
 }
 
-func (s *Service) Remove(ID int) error {
+func (s *Service) Remove(ID int64) error {
 	if ID == 0 {
 		return fmt.Errorf("invalid ID")
 	}
