@@ -19,8 +19,8 @@
 ## API Endpoints
 |Method|URL|Status|
 |:--:|:--|:--:|
-|**GET**|http://YOURHOST:4000/beer/|❌|
-|**GET**|http://YOURHOST:4000/beer/{:id}|❌|
-|**POST**|http://YOURHOST:4000/beer/|❌|
-|**PUT**|http://YOURHOST:4000/beer/{:id}|❌|
-|**DELETE**|http://YOURHOST:4000/beer/{:id}|❌|
+|**GET**|http://YOURHOST:4000/beer/|✅|
+|**GET**|http://YOURHOST:4000/beer/{:id}|✅|
+|**POST**|http://YOURHOST:4000/beer/|✅|
+|**PUT**|http://YOURHOST:4000/beer/{:id}|✅|
+|**DELETE**|http://YOURHOST:4000/beer/{:id}|✅|
