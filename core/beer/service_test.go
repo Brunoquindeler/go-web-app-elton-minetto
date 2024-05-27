@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/brunoquindeler/go-web-app-elton-minetto/core/beer"
+	"github.com/brunoquindeler/go-web-app-elton-minetto/utils"
 )
 
 func TestStore(t *testing.T) {
@@ -22,7 +23,12 @@ func TestStore(t *testing.T) {
 	defer dbTest.Close()
 
 	if _, err := dbTest.Exec(beer.CreateDBQuery); err != nil {
-		t.Fatalf("erro ao criar banco de dados: %s", err.Error())
+		t.Fatalf("erro ao criar tabela beer: %s", err.Error())
+	}
+
+	err = utils.ClearDB(dbTest)
+	if err != nil {
+		t.Fatalf("erro limpando banco de dados: %s", err.Error())
 	}
 
 	service := beer.NewService(dbTest)
