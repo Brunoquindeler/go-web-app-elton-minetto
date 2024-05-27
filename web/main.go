@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/brunoquindeler/go-web-app-elton-minetto/core/beer"
+	"github.com/brunoquindeler/go-web-app-elton-minetto/web/handlers"
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
 
@@ -22,6 +23,10 @@ func main() {
 	}
 	defer db.Close()
 
+	if _, err := db.Exec(beer.CreateDBQuery); err != nil {
+		log.Fatalf("erro ao criar banco de dados: %s", err.Error())
+	}
+
 	service := beer.NewService(db)
 
 	router := mux.NewRouter()
@@ -30,9 +35,7 @@ func main() {
 		negroni.NewLogger(),
 	)
 
-	router.Handle("/v1/beer", middleware.With(
-		negroni.Wrap(hello(service)),
-	)).Methods("GET", "OPTIONS")
+	handlers.MakeBeerHandlers(router, middleware, service)
 
 	http.Handle("/", router)
 
