@@ -1,7 +1,7 @@
 package beer
 
 type Beer struct {
-	ID    int64     `json:"id"`
+	ID    int64     `json:"id,omitempty"`
 	Name  string    `json:"name"`
 	Type  BeerType  `json:"type"`
 	Style BeerStyle `json:"style"`
