@@ -37,6 +37,11 @@ func main() {
 
 	handlers.MakeBeerHandlers(router, middleware, service)
 
+	fileServer := http.FileServer(http.Dir("./web/static"))
+	router.PathPrefix("/static/").Handler(middleware.With(
+		negroni.Wrap(http.StripPrefix("/static/", fileServer)),
+	)).Methods("GET", "OPTIONS")
+
 	http.Handle("/", router)
 
 	server := &http.Server{
