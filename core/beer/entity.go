@@ -1,10 +1,38 @@
 package beer
 
+const (
+	errNameIsRequired = "name is required"
+	errInvalidType    = "invalid beer type"
+	errInvalidStyle   = "invalid beer style"
+)
+
 type Beer struct {
 	ID    int64     `json:"id,omitempty"`
 	Name  string    `json:"name"`
 	Type  BeerType  `json:"type"`
 	Style BeerStyle `json:"style"`
+}
+
+func (b *Beer) Validate() ([]string, bool) {
+	var validationErrors []string
+
+	if b.Name == "" {
+		validationErrors = append(validationErrors, errNameIsRequired)
+	}
+
+	if b.Type.String() == "Unknown" {
+		validationErrors = append(validationErrors, errInvalidType)
+	}
+
+	if b.Style.String() == "Unknown" {
+		validationErrors = append(validationErrors, errInvalidStyle)
+	}
+
+	if len(validationErrors) > 0 {
+		return validationErrors, true
+	}
+
+	return nil, false
 }
 
 // https://www.thebeerstore.ca/beer-101/beer-types/
@@ -17,7 +45,7 @@ const (
 	TypeStout = 4
 )
 
-func (t BeerType) String(name string) string {
+func (t BeerType) String() string {
 	switch t {
 	case TypeAle:
 		return "Ale"
