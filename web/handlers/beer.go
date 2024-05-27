@@ -13,8 +13,6 @@ import (
 const errCorvertingToJSON = "erro convertendo em JSON"
 
 func MakeBeerHandlers(router *mux.Router, middleware *negroni.Negroni, service beer.UseCase) {
-	router.Headers("Content-type", "application/json")
-
 	router.Handle("/v1/beer", middleware.With(
 		negroni.Wrap(getAllBeer(service)),
 	)).Methods("GET", "OPTIONS")
