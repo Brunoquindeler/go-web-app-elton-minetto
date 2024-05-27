@@ -83,7 +83,11 @@ func storeBeer(service beer.UseCase) http.Handler {
 			return
 		}
 
-		// TODO: validar os dados
+		if validationErrors, hasErrors := b.Validate(); hasErrors {
+			writeResponseValidationError(w, validationErrors, http.StatusBadRequest)
+			return
+		}
+
 		_, err = service.Store(&b)
 		if err != nil {
 			writeResponseError(w, err.Error(), http.StatusInternalServerError)
@@ -116,7 +120,11 @@ func updateBeer(service beer.UseCase) http.Handler {
 			return
 		}
 
-		// TODO: validar os dados
+		if validationErrors, hasErrors := b.Validate(); hasErrors {
+			writeResponseValidationError(w, validationErrors, http.StatusBadRequest)
+			return
+		}
+
 		err = service.Update(b)
 		if err != nil {
 			writeResponseError(w, err.Error(), http.StatusInternalServerError)
